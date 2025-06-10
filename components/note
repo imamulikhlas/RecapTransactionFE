@@ -1,0 +1,14 @@
+### ** Setup Requirements:**
+
+#### **Google Cloud Console Setup:**
+
+1. **Create Project** di Google Cloud Console
+2. **Enable Gmail API**
+3. **Create OAuth 2.0 Credentials**:
+
+1. Application type: Web application
+2. Authorized redirect URIs: `http://localhost:3000/api/auth/google/callback`
+
+
+
+4. **Copy Client ID & Secret** ke environment variables
