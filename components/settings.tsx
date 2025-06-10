@@ -14,7 +14,7 @@ import { getEmailSettings, saveEmailSettings, type EmailSettings } from "@/lib/s
 interface SettingsProps {
   userId?: string
 }
-
+//test
 export default function Settings({ userId }: SettingsProps) {
   const [settings, setSettings] = useState<EmailSettings | null>(null)
   const [loading, setLoading] = useState(true)
