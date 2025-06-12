@@ -3,18 +3,32 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { getMonthlyTransactionData, getCategoryData, getTransactionStats } from "@/lib/supabase"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from "recharts"
+import { getTransactionStats, getTimeSeriesData, getCategoryAnalysis } from "@/lib/supabase"
 import { formatCurrency } from "@/lib/utils"
-import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2 } from "lucide-react"
+import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2, Calendar, Filter } from "lucide-react"
 
 interface AnalyticsProps {
   userId?: string
 }
 
 export default function Analytics({ userId }: AnalyticsProps) {
-  const [monthlyData, setMonthlyData] = useState<any[]>([])
+  const [timeRange, setTimeRange] = useState("monthly")
+  const [chartData, setChartData] = useState<any[]>([])
   const [categoryData, setCategoryData] = useState<any[]>([])
   const [stats, setStats] = useState({ income: 0, expense: 0 })
   const [loading, setLoading] = useState(true)
@@ -23,14 +37,14 @@ export default function Analytics({ userId }: AnalyticsProps) {
     const fetchAnalyticsData = async () => {
       setLoading(true)
       try {
-        const [monthly, category, statsData] = await Promise.all([
-          getMonthlyTransactionData(userId),
-          getCategoryData(userId),
+        const [timeData, categoryAnalysis, statsData] = await Promise.all([
+          getTimeSeriesData(timeRange as "daily" | "weekly" | "monthly", userId),
+          getCategoryAnalysis(userId),
           getTransactionStats(userId),
         ])
 
-        setMonthlyData(monthly)
-        setCategoryData(category)
+        setChartData(timeData)
+        setCategoryData(categoryAnalysis)
         setStats(statsData)
       } catch (error) {
         console.error("Error fetching analytics data:", error)
@@ -40,9 +54,19 @@ export default function Analytics({ userId }: AnalyticsProps) {
     }
 
     fetchAnalyticsData()
-  }, [userId])
+  }, [userId, timeRange])
 
-  const COLORS = ["#3b82f6", "#8b5cf6", "#06d6a0", "#f59e0b", "#ef4444", "#6b7280"]
+  // Dynamic color generation based on number of categories
+  const generateColors = (count: number) => {
+    const baseColors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4"]
+    const colors = []
+    for (let i = 0; i < count; i++) {
+      colors.push(baseColors[i % baseColors.length])
+    }
+    return colors
+  }
+
+  const COLORS = generateColors(categoryData.length)
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -69,11 +93,41 @@ export default function Analytics({ userId }: AnalyticsProps) {
   const netIncome = stats.income - stats.expense
   const savingsRate = stats.income > 0 ? (netIncome / stats.income) * 100 : 0
 
+  const getTimeRangeLabel = () => {
+    switch (timeRange) {
+      case "daily":
+        return "Last 30 Days"
+      case "weekly":
+        return "Last 12 Weeks"
+      case "monthly":
+        return "Last 12 Months"
+      default:
+        return "Time Period"
+    }
+  }
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-muted-foreground mt-1">Insights into your financial patterns</p>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+          <p className="text-muted-foreground mt-1">Insights into your spending patterns</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-[180px]">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Select time range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="daily">Daily View</SelectItem>
+              <SelectItem value="weekly">Weekly View</SelectItem>
+              <SelectItem value="monthly">Monthly View</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Key Metrics */}
@@ -111,88 +165,84 @@ export default function Analytics({ userId }: AnalyticsProps) {
         <motion.div custom={2} initial="hidden" animate="visible" variants={cardVariants}>
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-700">Avg Monthly Income</CardTitle>
+              <CardTitle className="text-sm font-medium text-purple-700">Total Income</CardTitle>
               <TrendingUp className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
-                {formatCurrency(
-                  monthlyData.length > 0
-                    ? monthlyData.reduce((sum, month) => sum + month.income, 0) / monthlyData.length
-                    : 0,
-                )}
-              </div>
-              <p className="text-xs text-purple-600 mt-1">Last 6 months</p>
+              <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.income)}</div>
+              <p className="text-xs text-purple-600 mt-1">{getTimeRangeLabel()}</p>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div custom={3} initial="hidden" animate="visible" variants={cardVariants}>
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-orange-700">Avg Monthly Expense</CardTitle>
-              <TrendingDown className="h-4 w-4 text-orange-600" />
+              <CardTitle className="text-sm font-medium text-red-700">Total Expenses</CardTitle>
+              <TrendingDown className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                {formatCurrency(
-                  monthlyData.length > 0
-                    ? monthlyData.reduce((sum, month) => sum + month.expense, 0) / monthlyData.length
-                    : 0,
-                )}
-              </div>
-              <p className="text-xs text-orange-600 mt-1">Last 6 months</p>
+              <div className="text-2xl font-bold text-red-600">{formatCurrency(stats.expense)}</div>
+              <p className="text-xs text-red-600 mt-1">{getTimeRangeLabel()}</p>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
       {/* Charts */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <motion.div custom={4} initial="hidden" animate="visible" variants={cardVariants}>
-          <Card className="h-full">
+          <Card className="h-[400px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Monthly Trends
+                {timeRange === "daily" ? "Daily" : timeRange === "weekly" ? "Weekly" : "Monthly"} Trends
               </CardTitle>
               <CardDescription>Income vs Expenses over time</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px]">
               <ChartContainer
                 config={{
                   income: {
                     label: "Income",
-                    color: "hsl(var(--chart-1))",
+                    color: "#22c55e",
                   },
                   expense: {
                     label: "Expense",
-                    color: "hsl(var(--chart-2))",
+                    color: "#ef4444",
                   },
                 }}
-                className="h-[300px]"
+                className="h-full w-full"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`} />
+                  <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="period" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis
+                      tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                      stroke="#64748b"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
                     <ChartTooltip
                       content={<ChartTooltipContent formatter={(value: any) => [formatCurrency(value), ""]} />}
                     />
                     <Line
                       type="monotone"
                       dataKey="income"
-                      stroke="var(--color-income)"
+                      stroke="#22c55e"
                       strokeWidth={3}
-                      dot={{ fill: "var(--color-income)", strokeWidth: 2, r: 4 }}
+                      dot={{ fill: "#22c55e", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: "#22c55e", strokeWidth: 2 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="expense"
-                      stroke="var(--color-expense)"
+                      stroke="#ef4444"
                       strokeWidth={3}
-                      dot={{ fill: "var(--color-expense)", strokeWidth: 2, r: 4 }}
+                      dot={{ fill: "#ef4444", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: "#ef4444", strokeWidth: 2 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -202,16 +252,16 @@ export default function Analytics({ userId }: AnalyticsProps) {
         </motion.div>
 
         <motion.div custom={5} initial="hidden" animate="visible" variants={cardVariants}>
-          <Card className="h-full">
+          <Card className="h-[400px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PieChartIcon className="h-5 w-5" />
                 Expense Categories
               </CardTitle>
-              <CardDescription>Breakdown of your spending</CardDescription>
+              <CardDescription>Breakdown of your spending by category</CardDescription>
             </CardHeader>
-            <CardContent>
-              <ChartContainer config={{}} className="h-[300px]">
+            <CardContent className="h-[300px]">
+              <ChartContainer config={{}} className="h-full w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -238,6 +288,7 @@ export default function Analytics({ userId }: AnalyticsProps) {
                               <p className="text-sm text-muted-foreground">
                                 {formatCurrency(data.amount)} ({data.percentage}%)
                               </p>
+                              <p className="text-xs text-muted-foreground">{data.count} transactions</p>
                             </div>
                           )
                         }
@@ -252,24 +303,86 @@ export default function Analytics({ userId }: AnalyticsProps) {
         </motion.div>
       </div>
 
-      {/* Category Breakdown Table */}
+      {/* Expense Breakdown Bar Chart */}
       <motion.div custom={6} initial="hidden" animate="visible" variants={cardVariants}>
         <Card>
           <CardHeader>
-            <CardTitle>Detailed Category Breakdown</CardTitle>
-            <CardDescription>Your spending by category with percentages</CardDescription>
+            <CardTitle>Category Analysis</CardTitle>
+            <CardDescription>Detailed breakdown of spending by category</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ChartContainer config={{}} className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={categoryData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="category"
+                      stroke="#64748b"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                      stroke="#64748b"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <ChartTooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload
+                          return (
+                            <div className="bg-background border rounded-lg p-3 shadow-lg">
+                              <p className="font-medium">{label}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {formatCurrency(data.amount)} ({data.percentage}%)
+                              </p>
+                              <p className="text-xs text-muted-foreground">{data.count} transactions</p>
+                            </div>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Bar dataKey="amount" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Category Details Table */}
+      <motion.div custom={7} initial="hidden" animate="visible" variants={cardVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Breakdown</CardTitle>
+            <CardDescription>Detailed spending analysis by category</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {categoryData.map((category, index) => (
-                <div key={category.category} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
+                <div
+                  key={category.category}
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-4 h-4 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                    <span className="font-medium">{category.category}</span>
+                    <div>
+                      <span className="font-medium">{category.category}</span>
+                      <p className="text-sm text-muted-foreground">{category.count} transactions</p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatCurrency(category.amount)}</div>
-                    <div className="text-sm text-muted-foreground">{category.percentage}% of total</div>
+                    <div className="font-semibold text-red-600">{formatCurrency(category.amount)}</div>
+                    <div className="text-sm text-muted-foreground">{category.percentage}% of total expenses</div>
                   </div>
                 </div>
               ))}

@@ -2,11 +2,12 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { LayoutDashboard, ListOrdered, PieChart, Settings, Menu, X, LogOut, FileText } from "lucide-react"
+import { LayoutDashboard, ListOrdered, PieChart, Settings, Menu, X, LogOut, FileText, Flame } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
-import type { User as SupabaseUser } from "@/lib/supabase"
+import type { User as SupabaseUser} from "@supabase/auth-js"
+
 
 interface SidebarProps {
   activeView: string
@@ -23,6 +24,7 @@ export default function Sidebar({ activeView, onViewChange, isMobile, user, onLo
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "transactions", label: "Transactions", icon: ListOrdered },
     { id: "analytics", label: "Analytics", icon: PieChart },
+    { id: "roasts", label: "Roasts", icon: Flame },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "logs", label: "Logs", icon: FileText },
   ]

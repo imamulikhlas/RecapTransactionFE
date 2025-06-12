@@ -14,18 +14,19 @@ import LoginForm from "@/components/auth/login-form"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import Settings from "@/components/settings"
 import Logs from "@/components/logs"
+import TransactionRoasts from "@/components/transaction-roasts"
+import RoastDetails from "@/components/roast-details"
+import type { TransactionRoast } from "@/lib/supabase"
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [activeView, setActiveView] = useState("overview")
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
-  const [sortBy, setSortBy] = useState("date")
-  const [sortOrder, setSortOrder] = useState("desc")
-  const [searchTerm, setSearchTerm] = useState("")
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const isMobile = useMediaQuery("(max-width: 768px)")
+  const [selectedRoast, setSelectedRoast] = useState<TransactionRoast | null>(null)
 
   useEffect(() => {
     const checkUser = async () => {
@@ -51,26 +52,30 @@ export default function Dashboard() {
     checkUser()
   }, [])
 
+  // Only fetch transactions for overview - TransactionList will handle its own data
   useEffect(() => {
     const fetchTransactions = async () => {
-      setLoading(true)
-      let filter
-      if (searchTerm) {
-        filter = { column: "description", value: searchTerm }
+      if (activeView === "overview") {
+        setLoading(true)
+        const data = await getTransactions(5, 0, "date", "desc", undefined, user?.id)
+        setTransactions(data)
+        setLoading(false)
       }
-      const data = await getTransactions(50, 0, sortBy, sortOrder, filter, user?.id)
-      setTransactions(data)
-      setLoading(false)
     }
 
     if (!authLoading) {
       fetchTransactions()
     }
-  }, [sortBy, sortOrder, searchTerm, user, authLoading])
+  }, [user, authLoading, activeView])
 
   const handleTransactionClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
     setActiveView("details")
+  }
+
+  const handleRoastClick = (roast: TransactionRoast) => {
+    setSelectedRoast(roast)
+    setActiveView("roast-details")
   }
 
   const handleBackClick = () => {
@@ -78,23 +83,18 @@ export default function Dashboard() {
     setSelectedTransaction(null)
   }
 
-  const handleSort = (column: string) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-    } else {
-      setSortBy(column)
-      setSortOrder("desc")
-    }
-  }
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term)
+  const handleRoastBackClick = () => {
+    setActiveView("roasts")
+    setSelectedRoast(null)
   }
 
   const handleViewChange = (view: string) => {
     setActiveView(view)
     if (view !== "details") {
       setSelectedTransaction(null)
+    }
+    if (view !== "roast-details") {
+      setSelectedRoast(null)
     }
   }
 
@@ -106,6 +106,14 @@ export default function Dashboard() {
 
   const handleLoginSuccess = () => {
     // User state will be updated by the auth state listener
+  }
+
+  const handleViewAllRoasts = () => {
+    setActiveView("roasts")
+  }
+
+  const handleViewRoastDetails = (roastId: number) => {
+    setActiveView("roasts")
   }
 
   if (authLoading) {
@@ -162,20 +170,14 @@ export default function Dashboard() {
                 onTransactionClick={handleTransactionClick}
                 loading={loading}
                 userId={user?.id}
+                onViewAllRoasts={handleViewAllRoasts}
+                onViewRoastDetails={handleViewRoastDetails}
+                onViewChange={handleViewChange}
               />
             )}
 
             {activeView === "transactions" && (
-              <TransactionList
-                transactions={transactions}
-                onTransactionClick={handleTransactionClick}
-                onSort={handleSort}
-                sortBy={sortBy}
-                sortOrder={sortOrder}
-                onSearch={handleSearch}
-                searchTerm={searchTerm}
-                loading={loading}
-              />
+              <TransactionList onTransactionClick={handleTransactionClick} userId={user?.id} />
             )}
 
             {activeView === "analytics" && <Analytics userId={user?.id} />}
@@ -187,6 +189,17 @@ export default function Dashboard() {
             {activeView === "settings" && <Settings userId={user?.id} />}
 
             {activeView === "logs" && <Logs userId={user?.id} />}
+
+            {activeView === "roasts" && <TransactionRoasts userId={user?.id} onRoastClick={handleRoastClick} />}
+
+            {activeView === "roast-details" && selectedRoast && (
+              <RoastDetails
+                roastId={selectedRoast.id}
+                userId={user?.id}
+                onBackClick={handleRoastBackClick}
+                onTransactionClick={handleTransactionClick}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
       </main>

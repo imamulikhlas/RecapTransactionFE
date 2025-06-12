@@ -2,32 +2,71 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { type Transaction, getTransactionStats, getRecentProviders } from "@/lib/supabase"
+import {
+  type Transaction,
+  getTransactionStats,
+  getRecentProviders,
+  getLatestRoasts,
+  type TransactionRoast,
+} from "@/lib/supabase"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, ArrowUpRight, ArrowDownRight, Loader2, TrendingUp, Wallet } from "lucide-react"
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ArrowDownRight,
+  Loader2,
+  TrendingUp,
+  Wallet,
+  Flame,
+  Sparkles,
+  AlertTriangle,
+  Coffee,
+} from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+import FeaturedRoast from "@/components/featured-roast"
 
 interface OverviewProps {
   transactions: Transaction[]
   onTransactionClick: (transaction: Transaction) => void
   loading: boolean
   userId?: string
+  onViewAllRoasts?: () => void
+  onViewRoastDetails?: (roastId: number) => void
+  onViewChange?: (view: string) => void
 }
 
-export default function Overview({ transactions, onTransactionClick, loading, userId }: OverviewProps) {
+export default function Overview({
+  transactions,
+  onTransactionClick,
+  loading,
+  userId,
+  onViewAllRoasts,
+  onViewRoastDetails,
+  onViewChange,
+}: OverviewProps) {
   const [stats, setStats] = useState({ income: 0, expense: 0 })
   const [providers, setProviders] = useState<any[]>([])
   const [statsLoading, setStatsLoading] = useState(true)
+  const [latestRoast, setLatestRoast] = useState<TransactionRoast | null>(null)
+  const [roastLoading, setRoastLoading] = useState(true)
 
   useEffect(() => {
     const fetchStats = async () => {
       setStatsLoading(true)
-      const statsData = await getTransactionStats(userId)
-      const providersData = await getRecentProviders(userId)
+      setRoastLoading(true)
+      const [statsData, providersData, roastsData] = await Promise.all([
+        getTransactionStats(userId),
+        getRecentProviders(userId),
+        getLatestRoasts(userId, 1),
+      ])
       setStats(statsData)
       setProviders(providersData)
+      if (roastsData.length > 0) {
+        setLatestRoast(roastsData[0])
+      }
       setStatsLoading(false)
+      setRoastLoading(false)
     }
 
     fetchStats()
@@ -49,6 +88,51 @@ export default function Overview({ transactions, onTransactionClick, loading, us
         stiffness: 100,
       },
     }),
+  }
+
+  const getRoastIcon = (type: string) => {
+    switch (type) {
+      case "spending_spree":
+        return <Flame className="h-5 w-5 text-red-400" />
+      case "income_flex":
+        return <TrendingUp className="h-5 w-5 text-green-400" />
+      case "budget_reality":
+        return <AlertTriangle className="h-5 w-5 text-yellow-400" />
+      case "savings_hero":
+        return <Sparkles className="h-5 w-5 text-blue-400" />
+      default:
+        return <Coffee className="h-5 w-5 text-purple-400" />
+    }
+  }
+
+  const getRoastColor = (type: string) => {
+    switch (type) {
+      case "spending_spree":
+        return "from-red-500/20 to-orange-500/20 border-red-500/30"
+      case "income_flex":
+        return "from-green-500/20 to-emerald-500/20 border-green-500/30"
+      case "budget_reality":
+        return "from-yellow-500/20 to-amber-500/20 border-yellow-500/30"
+      case "savings_hero":
+        return "from-blue-500/20 to-cyan-500/20 border-blue-500/30"
+      default:
+        return "from-purple-500/20 to-pink-500/20 border-purple-500/30"
+    }
+  }
+
+  const getRoastTitle = (type: string) => {
+    switch (type) {
+      case "spending_spree":
+        return "🔥 Spending Spree Alert!"
+      case "income_flex":
+        return "💰 Income Flex Mode"
+      case "budget_reality":
+        return "🎯 Budget Reality Check"
+      case "savings_hero":
+        return "⭐ Savings Hero"
+      default:
+        return "🚀 Financial Roast"
+    }
   }
 
   return (
@@ -140,6 +224,36 @@ export default function Overview({ transactions, onTransactionClick, loading, us
         </motion.div>
       </div>
 
+      {/* Featured Roast */}
+      {latestRoast && !roastLoading && (
+        <motion.div custom={4} initial="hidden" animate="visible" variants={cardVariants}>
+          <FeaturedRoast
+            roast={latestRoast}
+            onViewAll={() => onViewAllRoasts?.()}
+            onViewDetails={() => onViewRoastDetails?.(latestRoast.id)}
+          />
+        </motion.div>
+      )}
+
+      {/* Loading state for roast */}
+      {roastLoading && (
+        <motion.div custom={4} initial="hidden" animate="visible" variants={cardVariants}>
+          <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30">
+            <CardContent className="flex items-center justify-center py-12">
+              <div className="flex items-center space-x-3">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                >
+                  <Flame className="h-6 w-6 text-purple-400" />
+                </motion.div>
+                <span className="text-white">Loading your latest roast...</span>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2">
         <motion.div custom={4} initial="hidden" animate="visible" variants={cardVariants}>
           <Card className="h-full hover:shadow-lg transition-shadow">
@@ -227,6 +341,7 @@ export default function Overview({ transactions, onTransactionClick, loading, us
         <Button
           className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           size="lg"
+          onClick={() => onViewChange?.("transactions")}
         >
           View All Transactions
           <ArrowRight className="ml-2 h-4 w-4" />
