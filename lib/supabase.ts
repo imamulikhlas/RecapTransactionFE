@@ -464,7 +464,7 @@ export async function getTransactionStats(userId?: string) {
 
   let incomeQuery = supabase.from("transactions").select("amount").eq("transaction_type", "income").gt("amount", 0)
 
-  let expenseQuery = supabase.from("transactions").select("amount").eq("transaction_type", "expense").lt("amount", 0)
+  let expenseQuery = supabase.from("transactions").select("amount").eq("transaction_type", "expense").gt("amount", 0)
 
   if (userId) {
     incomeQuery = incomeQuery.eq("user_id", userId)
