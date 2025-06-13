@@ -180,7 +180,7 @@ export default function Dashboard() {
               <TransactionList onTransactionClick={handleTransactionClick} userId={user?.id} />
             )}
 
-            {activeView === "analytics" && <Analytics userId={user?.id} />}
+            {activeView === "analytics" && <Analytics userId={user?.id} onTransactionClick={handleTransactionClick} />}
 
             {activeView === "details" && selectedTransaction && (
               <TransactionDetails transaction={selectedTransaction} onBackClick={handleBackClick} />

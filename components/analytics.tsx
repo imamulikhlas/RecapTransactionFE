@@ -21,17 +21,23 @@ import {
 import { getTransactionStats, getTimeSeriesData, getCategoryAnalysis } from "@/lib/supabase"
 import { formatCurrency } from "@/lib/utils"
 import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2, Calendar, Filter } from "lucide-react"
+import CategoryTransactionsModal from "@/components/category-transactions-modal"
+import type { Transaction } from "@/types"
 
+// Tambahkan onTransactionClick ke interface AnalyticsProps
 interface AnalyticsProps {
   userId?: string
+  onTransactionClick: (transaction: Transaction) => void
 }
 
-export default function Analytics({ userId }: AnalyticsProps) {
+export default function Analytics({ userId, onTransactionClick }: AnalyticsProps) {
   const [timeRange, setTimeRange] = useState("monthly")
   const [chartData, setChartData] = useState<any[]>([])
   const [categoryData, setCategoryData] = useState<any[]>([])
   const [stats, setStats] = useState({ income: 0, expense: 0 })
   const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
@@ -104,6 +110,11 @@ export default function Analytics({ userId }: AnalyticsProps) {
       default:
         return "Time Period"
     }
+  }
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category)
+    setCategoryModalOpen(true)
   }
 
   return (
@@ -371,7 +382,8 @@ export default function Analytics({ userId }: AnalyticsProps) {
               {categoryData.map((category, index) => (
                 <div
                   key={category.category}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => handleCategoryClick(category.category)}
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-4 h-4 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
@@ -390,6 +402,13 @@ export default function Analytics({ userId }: AnalyticsProps) {
           </CardContent>
         </Card>
       </motion.div>
+      <CategoryTransactionsModal
+        open={categoryModalOpen}
+        onOpenChange={setCategoryModalOpen}
+        category={selectedCategory}
+        userId={userId}
+        onTransactionClick={onTransactionClick}
+      />
     </div>
   )
 }

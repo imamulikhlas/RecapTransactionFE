@@ -1,25 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  Flame,
-  Coffee,
-  TrendingUp,
-  AlertTriangle,
-  Sparkles,
-  Zap,
-  Clock,
-  Eye,
-  ChevronRight,
-  Loader2,
-} from "lucide-react"
+import { Flame, Coffee, TrendingUp, AlertTriangle, Sparkles, Zap, Clock, Eye, Loader2 } from "lucide-react"
 import { getLatestRoasts, type TransactionRoast } from "@/lib/supabase"
 import { formatDate } from "@/lib/utils"
+
+// Tambahkan import untuk RoastCarousel
+import RoastCarousel from "@/components/roast-carousel"
 
 interface TransactionRoastsProps {
   userId?: string
@@ -185,66 +176,24 @@ export default function TransactionRoasts({ userId, onRoastClick }: TransactionR
       </motion.div>
 
       {/* Roast History */}
-      {roasts.length > 1 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-yellow-400" />
-                Recent Roasts
-              </CardTitle>
-              <CardDescription className="text-slate-400">Your latest financial roasting sessions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <AnimatePresence>
-                  {roasts.slice(1).map((roast, index) => (
-                    <motion.div
-                      key={roast.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ delay: index * 0.1, duration: 0.4 }}
-                      className="group cursor-pointer"
-                      onClick={() => {
-                        setSelectedRoast(roast)
-                        onRoastClick?.(roast)
-                      }}
-                    >
-                      <div className="flex items-center space-x-4 p-4 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-all duration-200 border border-slate-600/50 hover:border-slate-500">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback
-                            className={`bg-gradient-to-r ${getRoastColor(roast.roast_type).split(" ")[1]} text-white`}
-                          >
-                            {getRoastIcon(roast.roast_type)}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-white truncate">{getRoastTitle(roast.roast_type)}</h4>
-                            <Badge variant="outline" className="border-slate-500 text-slate-300 text-xs">
-                              {roast.tx_ids?.length || 0} txs
-                            </Badge>
-                          </div>
-                          <p className="text-slate-400 text-sm truncate">{roast.roast_text.substring(0, 80)}...</p>
-                          <p className="text-slate-500 text-xs mt-1">{formatDate(roast.roast_time)}</p>
-                        </div>
-
-                        <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-white transition-colors" />
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-yellow-400" />
+              Roast Timeline
+            </CardTitle>
+            <CardDescription className="text-slate-400">Browse your financial roasts by date</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RoastCarousel userId={userId} onRoastClick={onRoastClick} />
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Fun Stats */}
       <motion.div

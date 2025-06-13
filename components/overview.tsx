@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import FeaturedRoast from "@/components/featured-roast"
+import ProviderTransactionsModal from "@/components/provider-transactions-modal"
 
 interface OverviewProps {
   transactions: Transaction[]
@@ -51,6 +52,9 @@ export default function Overview({
   const [latestRoast, setLatestRoast] = useState<TransactionRoast | null>(null)
   const [roastLoading, setRoastLoading] = useState(true)
 
+  const [selectedProvider, setSelectedProvider] = useState<string>("")
+  const [providerModalOpen, setProviderModalOpen] = useState(false)
+  
   useEffect(() => {
     const fetchStats = async () => {
       setStatsLoading(true)
@@ -133,6 +137,11 @@ export default function Overview({
       default:
         return "🚀 Financial Roast"
     }
+  }
+
+  const handleProviderClick = (provider: string) => {
+    setSelectedProvider(provider)
+    setProviderModalOpen(true)
   }
 
   return (
@@ -317,7 +326,8 @@ export default function Overview({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="flex items-center justify-between"
+                      className="flex items-center justify-between cursor-pointer hover:bg-muted/30 p-3 rounded-lg transition-colors"
+                      onClick={() => handleProviderClick(provider.provider)}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
@@ -347,6 +357,13 @@ export default function Overview({
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </motion.div>
+      <ProviderTransactionsModal
+        open={providerModalOpen}
+        onOpenChange={setProviderModalOpen}
+        provider={selectedProvider}
+        userId={userId}
+        onTransactionClick={onTransactionClick}
+      />
     </div>
   )
 }
