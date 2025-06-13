@@ -31,7 +31,7 @@ interface AnalyticsProps {
 }
 
 export default function Analytics({ userId, onTransactionClick }: AnalyticsProps) {
-  const [timeRange, setTimeRange] = useState("monthly")
+  const [timeRange, setTimeRange] = useState("daily")
   const [chartData, setChartData] = useState<any[]>([])
   const [categoryData, setCategoryData] = useState<any[]>([])
   const [stats, setStats] = useState({ income: 0, expense: 0 })
