@@ -238,7 +238,7 @@ export default function RoastDetails({ roastId, userId, onBackClick, onTransacti
                       {/* Main Info */}
                       <div className="flex items-center gap-3">
                         <h4 className="font-medium text-white group-hover:text-blue-300 transition-colors">
-                          {transaction.description}
+                          {transaction.reference}
                         </h4>
                         <ExternalLink className="h-4 w-4 text-slate-400 group-hover:text-blue-300 transition-colors" />
                       </div>

@@ -76,7 +76,7 @@ export default function Logs({ userId }: LogsProps) {
     switch (status.toLowerCase()) {
       case "success":
         return <CheckCircle className="h-4 w-4 text-green-500" />
-      case "error":
+      case "failure":
         return <XCircle className="h-4 w-4 text-red-500" />
       case "warning":
         return <AlertCircle className="h-4 w-4 text-yellow-500" />
@@ -90,7 +90,7 @@ export default function Logs({ userId }: LogsProps) {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       success: "default",
-      error: "destructive",
+      failure: "destructive",
       warning: "secondary",
       processing: "outline",
     }
@@ -143,7 +143,7 @@ export default function Logs({ userId }: LogsProps) {
                   <SelectItem value="success" className="text-white">
                     Success
                   </SelectItem>
-                  <SelectItem value="error" className="text-white">
+                  <SelectItem value="failure" className="text-white">
                     Error
                   </SelectItem>
                   <SelectItem value="warning" className="text-white">
