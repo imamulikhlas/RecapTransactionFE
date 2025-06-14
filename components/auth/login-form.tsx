@@ -65,7 +65,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
             >
-              <span className="text-white font-bold text-2xl">T</span>
+              <img src="assets/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </motion.div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               TransactionHub

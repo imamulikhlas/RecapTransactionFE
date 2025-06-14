@@ -256,7 +256,7 @@ export default function TransactionDetails({
 
         <CardFooter className="flex justify-between border-t p-6 bg-muted/30">
           <PDFDownloadLink
-            document={<TransactionReceiptPDF transaction={transaction} />}
+            document={<TransactionReceiptPDF transaction={transaction} logoUrl="/assets/logo4.png" />}
             fileName={`transaction-${transaction.id}.pdf`}
             className="inline-flex items-center gap-2 text-sm px-4 py-2 border rounded-md hover:bg-muted transition-colors"
           >
