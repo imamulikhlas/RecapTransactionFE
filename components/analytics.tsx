@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { getTransactionsPaginated } from "@/lib/supabase"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -20,9 +21,11 @@ import {
 } from "recharts"
 import { getTransactionStats, getTimeSeriesData, getCategoryAnalysis } from "@/lib/supabase"
 import { formatCurrency } from "@/lib/utils/utils"
-import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2, Calendar, Filter } from "lucide-react"
+import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2, Calendar, Filter,Download } from "lucide-react"
 import CategoryTransactionsModal from "@/components/category-transactions-modal"
 import type { Transaction } from "@/types"
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer"
+import AnalyticsReportPDF from "@/components/pdf/AnalyticsReportPDF"  
 
 // Tambahkan onTransactionClick ke interface AnalyticsProps
 interface AnalyticsProps {
@@ -35,6 +38,7 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
   const [chartData, setChartData] = useState<any[]>([])
   const [categoryData, setCategoryData] = useState<any[]>([])
   const [stats, setStats] = useState({ income: 0, expense: 0 })
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState("")
   const [categoryModalOpen, setCategoryModalOpen] = useState(false)
@@ -43,15 +47,17 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
     const fetchAnalyticsData = async () => {
       setLoading(true)
       try {
-        const [timeData, categoryAnalysis, statsData] = await Promise.all([
+        const [timeData, categoryAnalysis, statsData, txPage] = await Promise.all([
           getTimeSeriesData(timeRange as "daily" | "weekly" | "monthly", userId),
           getCategoryAnalysis(userId),
           getTransactionStats(userId),
+          getTransactionsPaginated(1, 1000, "date", "desc", {}, userId),
         ])
 
         setChartData(timeData)
         setCategoryData(categoryAnalysis)
         setStats(statsData)
+        setTransactions(txPage.data)
       } catch (error) {
         console.error("Error fetching analytics data:", error)
       } finally {
@@ -126,6 +132,28 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
         </div>
 
         <div className="flex items-center gap-3">
+          <PDFDownloadLink
+  document={
+    <AnalyticsReportPDF
+      stats={stats}
+      chartData={chartData}
+      categoryData={categoryData}
+      transactions={transactions}
+      timeRangeLabel={getTimeRangeLabel()}
+      logoUrl="/logo.png"
+    />
+  }
+  fileName={`Report-${timeRange}.pdf`}
+  className="inline-flex items-center gap-2 text-sm px-4 py-2 border rounded-md hover:bg-muted transition-colors"
+>
+  {({ loading }) => (
+    <>
+      <Download className="h-4 w-4" />
+      {loading ? "Loading.." : "Export PDF"}
+    </>
+  )}
+</PDFDownloadLink>
+
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[180px]">

@@ -1,11 +1,18 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import type { Transaction } from "@/lib/supabase"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { motion } from "framer-motion";
+import type { Transaction } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Download,
@@ -21,18 +28,25 @@ import {
   DollarSign,
   ArrowRightLeft,
   Receipt,
-} from "lucide-react"
-import { formatCurrency, formatDate } from "@/lib/utils/utils"
+} from "lucide-react";
+import { formatCurrency, formatDate } from "@/lib/utils/utils";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import TransactionReceiptPDF from "@/components/pdf/TransactionReceiptPDF";
 
 interface TransactionDetailsProps {
-  transaction: Transaction
-  onBackClick: () => void
+  transaction: Transaction;
+  onBackClick: () => void;
 }
 
-export default function TransactionDetails({ transaction, onBackClick }: TransactionDetailsProps) {
-  const isExpense = transaction.amount < 0
-  const amountColor = isExpense ? "text-red-600" : "text-green-600"
-  const amountBg = isExpense ? "from-red-50 to-red-100" : "from-green-50 to-green-100"
+export default function TransactionDetails({
+  transaction,
+  onBackClick,
+}: TransactionDetailsProps) {
+  const isExpense = transaction.amount < 0;
+  const amountColor = isExpense ? "text-red-600" : "text-green-600";
+  const amountBg = isExpense
+    ? "from-red-50 to-red-100"
+    : "from-green-50 to-green-100";
 
   return (
     <motion.div
@@ -52,10 +66,17 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
         <CardHeader className={`bg-gradient-to-r ${amountBg} border-b`}>
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <CardTitle className="text-2xl">{transaction.description}</CardTitle>
-              <CardDescription className="text-base">Transaction details and information</CardDescription>
+              <CardTitle className="text-2xl">
+                {transaction.description}
+              </CardTitle>
+              <CardDescription className="text-base">
+                Transaction details and information
+              </CardDescription>
             </div>
-            <Badge variant={isExpense ? "destructive" : "default"} className="text-sm px-3 py-1">
+            <Badge
+              variant={isExpense ? "destructive" : "default"}
+              className="text-sm px-3 py-1"
+            >
               {transaction.transaction_type?.toUpperCase() || "TRANSACTION"}
             </Badge>
           </div>
@@ -68,7 +89,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
               <DollarSign className={`h-6 w-6 ${amountColor}`} />
               <h3 className="text-lg font-medium">Amount</h3>
             </div>
-            <div className={`text-4xl font-bold ${amountColor}`}>{formatCurrency(transaction.amount)}</div>
+            <div className={`text-4xl font-bold ${amountColor}`}>
+              {formatCurrency(transaction.amount)}
+            </div>
             {transaction.fee && transaction.fee > 0 && (
               <p className="text-muted-foreground mt-1">
                 Fee: {formatCurrency(transaction.fee)} • Total:{" "}
@@ -92,16 +115,24 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                 <div className="flex items-center gap-3">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Date</p>
-                    <p className="font-medium">{formatDate(transaction.date)}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Date
+                    </p>
+                    <p className="font-medium">
+                      {formatDate(transaction.date)}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <Hash className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Reference</p>
-                    <p className="font-medium font-mono text-sm">{transaction.reference || "—"}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Reference
+                    </p>
+                    <p className="font-medium font-mono text-sm">
+                      {transaction.reference || "—"}
+                    </p>
                   </div>
                 </div>
 
@@ -109,7 +140,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                   <div className="flex items-center gap-3">
                     <Tag className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Category</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Category
+                      </p>
                       <Badge variant="outline">{transaction.category}</Badge>
                     </div>
                   </div>
@@ -119,7 +152,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                   <div className="flex items-center gap-3">
                     <Store className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Merchant</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Merchant
+                      </p>
                       <p className="font-medium">{transaction.merchant}</p>
                     </div>
                   </div>
@@ -138,7 +173,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                 <div className="flex items-center gap-3">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Provider</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Provider
+                    </p>
                     <p className="font-medium">{transaction.provider || "—"}</p>
                   </div>
                 </div>
@@ -146,16 +183,24 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                 <div className="flex items-center gap-3">
                   <CreditCard className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">From Account</p>
-                    <p className="font-medium">{transaction.account_from || "—"}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      From Account
+                    </p>
+                    <p className="font-medium">
+                      {transaction.account_from || "—"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <CreditCard className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">To Account</p>
-                    <p className="font-medium">{transaction.account_to || "—"}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      To Account
+                    </p>
+                    <p className="font-medium">
+                      {transaction.account_to || "—"}
+                    </p>
                   </div>
                 </div>
 
@@ -182,7 +227,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                   Note
                 </h4>
                 <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-muted-foreground">{transaction.note_to_user}</p>
+                  <p className="text-muted-foreground">
+                    {transaction.note_to_user}
+                  </p>
                 </div>
               </div>
             </>
@@ -208,10 +255,15 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
         </CardContent>
 
         <CardFooter className="flex justify-between border-t p-6 bg-muted/30">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <PDFDownloadLink
+            document={<TransactionReceiptPDF transaction={transaction} />}
+            fileName={`transaction-${transaction.id}.pdf`}
+            className="inline-flex items-center gap-2 text-sm px-4 py-2 border rounded-md hover:bg-muted transition-colors"
+          >
+            <Download className="h-4 w-4" />
+            Export Receipt
+          </PDFDownloadLink>
+
           <Button>
             <Share2 className="mr-2 h-4 w-4" />
             Share
@@ -224,12 +276,18 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${amountBg} flex items-center justify-center`}>
+              <div
+                className={`w-10 h-10 rounded-full bg-gradient-to-r ${amountBg} flex items-center justify-center`}
+              >
                 <DollarSign className={`h-5 w-5 ${amountColor}`} />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Transaction Type</p>
-                <p className="font-semibold capitalize">{transaction.transaction_type}</p>
+                <p className="text-sm text-muted-foreground">
+                  Transaction Type
+                </p>
+                <p className="font-semibold capitalize">
+                  {transaction.transaction_type}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -243,7 +301,9 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Created</p>
-                <p className="font-semibold">{formatDate(transaction.created_at)}</p>
+                <p className="font-semibold">
+                  {formatDate(transaction.created_at)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -264,5 +324,5 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
         </Card>
       </div>
     </motion.div>
-  )
+  );
 }
