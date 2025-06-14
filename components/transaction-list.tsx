@@ -187,7 +187,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                         <SelectValue placeholder="All categories" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All categories</SelectItem>
+                        <SelectItem >All categories</SelectItem>
                         {filterOptions.categories.map((category) => (
                           <SelectItem key={category} value={category}>
                             {category}
@@ -208,7 +208,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                         <SelectValue placeholder="All types" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All types</SelectItem>
+                        <SelectItem >All types</SelectItem>
                         {filterOptions.transaction_types.map((type) => (
                           <SelectItem key={type} value={type}>
                             {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -229,7 +229,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                         <SelectValue placeholder="All providers" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All providers</SelectItem>
+                        <SelectItem >All providers</SelectItem>
                         {filterOptions.providers.map((provider) => (
                           <SelectItem key={provider} value={provider}>
                             {provider}
@@ -250,7 +250,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                         <SelectValue placeholder="All merchants" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All merchants</SelectItem>
+                        <SelectItem >All merchants</SelectItem>
                         {filterOptions.merchants.map((merchant) => (
                           <SelectItem key={merchant} value={merchant}>
                             {merchant}
