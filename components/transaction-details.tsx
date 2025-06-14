@@ -189,7 +189,7 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
           )}
 
           {/* Raw Data Section */}
-          {transaction.raw_payload && (
+          {/* {transaction.raw_payload && (
             <>
               <Separator className="my-6" />
               <div className="space-y-3">
@@ -204,7 +204,7 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                 </div>
               </div>
             </>
-          )}
+          )} */}
         </CardContent>
 
         <CardFooter className="flex justify-between border-t p-6 bg-muted/30">
