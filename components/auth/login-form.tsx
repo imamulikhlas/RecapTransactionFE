@@ -1,50 +1,62 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { signIn, signUp } from "@/lib/supabase"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { signIn, signUp } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 interface LoginFormProps {
-  onSuccess: () => void
+  onSuccess: () => void;
 }
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
-  const [isLogin, setIsLogin] = useState(true)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [fullName, setFullName] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       if (isLogin) {
-        const { error } = await signIn(email, password)
-        if (error) throw error
+        const { error } = await signIn(email, password);
+        if (error) throw error;
+        onSuccess();
       } else {
-        const { error } = await signUp(email, password, fullName)
-        if (error) throw error
+        const { error } = await signUp(email, password, fullName);
+        if (error) throw error;
+
+        setError(
+          "Account created! Please check your email to verify your account."
+        );
+        return;
       }
-      onSuccess()
+      onSuccess();
     } catch (error: any) {
-      setError(error.message)
+      setError(error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
@@ -65,13 +77,19 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
             >
-              <img src="assets/logo.png" alt="Logo" className="w-full h-full object-cover" />
+              <img
+                src="assets/logo.png"
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
             </motion.div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               TransactionHub
             </CardTitle>
             <CardDescription className="text-slate-400 text-base">
-              {isLogin ? "Welcome back! Sign in to your account" : "Create your account to get started"}
+              {isLogin
+                ? "Welcome back! Sign in to your account"
+                : "Create your account to get started"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -141,14 +159,24 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-slate-400 hover:text-slate-300"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
 
               {error && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                  <Alert variant="destructive" className="bg-red-900/20 border-red-800 text-red-400">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Alert
+                    variant="destructive"
+                    className="bg-red-900/20 border-red-800 text-red-400"
+                  >
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 </motion.div>
@@ -179,12 +207,14 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-slate-400 hover:text-blue-400 transition-colors"
               >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                {isLogin
+                  ? "Don't have an account? Sign up"
+                  : "Already have an account? Sign in"}
               </Button>
             </div>
           </CardContent>
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }
