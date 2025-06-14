@@ -154,7 +154,7 @@ export default function ProviderTransactionsModal({
                         {formatDate(transaction.date)}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {transaction.description}
+                        {transaction.note_to_user}
                       </TableCell>
                       <TableCell>
                         {transaction.category && (

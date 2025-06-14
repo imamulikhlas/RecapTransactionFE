@@ -366,7 +366,7 @@ export default function Overview({
                     >
                       <div className="space-y-1">
                         <p className="font-medium line-clamp-1">
-                          {transaction.description}
+                          {transaction.category}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {new Date(transaction.date).toLocaleDateString()}
