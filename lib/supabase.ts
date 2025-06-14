@@ -568,6 +568,7 @@ export async function getTimeSeriesData(
 
   // Calculate date range based on timeframe
   const endDate = new Date()
+  endDate.setHours(23, 59, 59, 999)
   const startDate = new Date()
 
   if (timeframe === "daily") {
@@ -582,7 +583,7 @@ export async function getTimeSeriesData(
     .from("transactions")
     .select("date, amount, transaction_type")
     .gte("date", startDate.toISOString().split("T")[0])
-    .lte("date", endDate.toISOString().split("T")[0])
+    .lte("date", endDate.toISOString())
 
   if (userId) {
     query = query.eq("user_id", userId)
