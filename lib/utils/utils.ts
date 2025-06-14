@@ -18,12 +18,17 @@ export function formatDate(dateString: string): string {
   if (!dateString) return "—"
 
   const date = new Date(dateString)
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
+  return date.toLocaleString("id-ID", {
+    day: "2-digit",
     month: "short",
     year: "numeric",
-  }).format(date)
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
 }
+
 
 export function getTransactionTypeColor(type: string): string {
   switch (type?.toLowerCase()) {

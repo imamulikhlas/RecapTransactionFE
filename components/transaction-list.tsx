@@ -28,7 +28,7 @@ import {
   Calendar,
   DollarSign,
 } from "lucide-react"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { formatCurrency, formatDate } from "@/lib/utils/utils"
 
 interface TransactionListProps {
   onTransactionClick: (transaction: Transaction) => void

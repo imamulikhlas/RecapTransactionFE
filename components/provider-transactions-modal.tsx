@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -9,20 +9,32 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Loader2, X, ArrowRight } from "lucide-react"
-import { getTransactionsPaginated, type Transaction, type TransactionFilters } from "@/lib/supabase"
-import { formatCurrency, formatDate } from "@/lib/utils"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, X, ArrowRight } from "lucide-react";
+import {
+  getTransactionsPaginated,
+  type Transaction,
+  type TransactionFilters,
+} from "@/lib/supabase";
+import { formatCurrency, formatDate } from "@/lib/utils/utils";
+import { getProviderLogo } from "@/lib/utils/logo";
 
 interface ProviderTransactionsModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  provider: string
-  userId?: string
-  onTransactionClick: (transaction: Transaction) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  provider: string;
+  userId?: string;
+  onTransactionClick: (transaction: Transaction) => void;
 }
 
 export default function ProviderTransactionsModal({
@@ -32,47 +44,78 @@ export default function ProviderTransactionsModal({
   userId,
   onTransactionClick,
 }: ProviderTransactionsModalProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
-  const [total, setTotal] = useState(0)
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      if (!open || !provider) return
+      if (!open || !provider) return;
 
-      setLoading(true)
+      setLoading(true);
       try {
-        const filters: TransactionFilters = { provider }
-        const result = await getTransactionsPaginated(1, 10, "date", "desc", filters, userId)
-        setTransactions(result.data)
-        setTotal(result.total)
+        const filters: TransactionFilters = { provider };
+        const result = await getTransactionsPaginated(
+          1,
+          10,
+          "date",
+          "desc",
+          filters,
+          userId
+        );
+        setTransactions(result.data);
+        setTotal(result.total);
       } catch (error) {
-        console.error("Error fetching provider transactions:", error)
+        console.error("Error fetching provider transactions:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchTransactions()
-  }, [open, provider, userId])
+    fetchTransactions();
+  }, [open, provider, userId]);
 
   const handleTransactionClick = (transaction: Transaction) => {
-    onTransactionClick(transaction)
-    onOpenChange(false)
-  }
-
+    onTransactionClick(transaction);
+    onOpenChange(false);
+  };
+  const logo = getProviderLogo(provider);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-              <span className="font-medium text-xs text-white">{provider?.charAt(0) || "?"}</span>
-            </div>
+            {logo ? (
+              <div className="h-8 w-8 rounded-full overflow-hidden bg-white shadow relative flex items-center justify-center">
+                <img
+                  src={logo}
+                  alt={provider}
+                  className="object-contain w-full h-full"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.style.display = "none";
+                    const fallback =
+                      e.currentTarget.parentElement?.querySelector(".fallback");
+                    if (fallback) fallback.classList.remove("hidden");
+                  }}
+                />
+                <div className="fallback hidden absolute inset-0 flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium rounded-full">
+                  {provider?.charAt(0) || "?"}
+                </div>
+              </div>
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                <span className="font-medium text-xs text-white">
+                  {provider?.charAt(0) || "?"}
+                </span>
+              </div>
+            )}
+
             <span>{provider} Transactions</span>
           </DialogTitle>
           <DialogDescription>
-            Showing {transactions.length} of {total} transactions from this provider
+            Showing {transactions.length} of {total} transactions from this
+            provider
           </DialogDescription>
         </DialogHeader>
 
@@ -81,7 +124,9 @@ export default function ProviderTransactionsModal({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : transactions.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">No transactions found for this provider</div>
+          <div className="text-center py-12 text-muted-foreground">
+            No transactions found for this provider
+          </div>
         ) : (
           <div className="rounded-md border">
             <Table>
@@ -105,8 +150,12 @@ export default function ProviderTransactionsModal({
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => handleTransactionClick(transaction)}
                     >
-                      <TableCell className="font-medium">{formatDate(transaction.date)}</TableCell>
-                      <TableCell className="max-w-[200px] truncate">{transaction.description}</TableCell>
+                      <TableCell className="font-medium">
+                        {formatDate(transaction.date)}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {transaction.description}
+                      </TableCell>
                       <TableCell>
                         {transaction.category && (
                           <Badge variant="outline" className="text-xs">
@@ -115,7 +164,11 @@ export default function ProviderTransactionsModal({
                         )}
                       </TableCell>
                       <TableCell
-                        className={`text-right ${transaction.amount < 0 ? "text-destructive" : "text-green-600"}`}
+                        className={`text-right ${
+                          transaction.amount < 0
+                            ? "text-destructive"
+                            : "text-green-600"
+                        }`}
                       >
                         {formatCurrency(transaction.amount)}
                       </TableCell>
@@ -139,5 +192,5 @@ export default function ProviderTransactionsModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

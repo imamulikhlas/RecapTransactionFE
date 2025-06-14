@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Flame, Coffee, TrendingUp, AlertTriangle, Sparkles, Zap, Clock, Eye, Loader2 } from "lucide-react"
 import { getLatestRoasts, type TransactionRoast } from "@/lib/supabase"
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils/utils"
 
 // Tambahkan import untuk RoastCarousel
 import RoastCarousel from "@/components/roast-carousel"

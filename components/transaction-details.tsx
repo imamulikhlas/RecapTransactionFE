@@ -22,7 +22,7 @@ import {
   ArrowRightLeft,
   Receipt,
 } from "lucide-react"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { formatCurrency, formatDate } from "@/lib/utils/utils"
 
 interface TransactionDetailsProps {
   transaction: Transaction

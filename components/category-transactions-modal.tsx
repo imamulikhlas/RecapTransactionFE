@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Loader2, X, ArrowRight } from "lucide-react"
 import { getTransactionsPaginated, type Transaction, type TransactionFilters } from "@/lib/supabase"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { formatCurrency, formatDate } from "@/lib/utils/utils"
 
 interface CategoryTransactionsModalProps {
   open: boolean

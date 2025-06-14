@@ -19,7 +19,7 @@ import {
   Bar,
 } from "recharts"
 import { getTransactionStats, getTimeSeriesData, getCategoryAnalysis } from "@/lib/supabase"
-import { formatCurrency } from "@/lib/utils"
+import { formatCurrency } from "@/lib/utils/utils"
 import { TrendingUp, TrendingDown, DollarSign, PieChartIcon, BarChart3, Loader2, Calendar, Filter } from "lucide-react"
 import CategoryTransactionsModal from "@/components/category-transactions-modal"
 import type { Transaction } from "@/types"

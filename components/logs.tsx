@@ -20,7 +20,7 @@ import {
   Clock,
 } from "lucide-react"
 import { getEmailLogs, type EmailLog } from "@/lib/supabase"
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils/utils"
 
 interface LogsProps {
   userId?: string

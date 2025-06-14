@@ -23,7 +23,7 @@ import {
   StickyNote,
 } from "lucide-react"
 import { getRoastById, getTransactionById, type TransactionRoast, type Transaction } from "@/lib/supabase"
-import { formatDate, formatCurrency } from "@/lib/utils"
+import { formatDate, formatCurrency } from "@/lib/utils/utils"
 
 interface RoastDetailsProps {
   roastId: number

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Flame, TrendingUp, AlertTriangle, Sparkles, Coffee, Clock, Eye, ArrowRight, Zap, Star } from "lucide-react"
 import type { TransactionRoast } from "@/lib/supabase"
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils/utils"
 
 interface FeaturedRoastProps {
   roast: TransactionRoast

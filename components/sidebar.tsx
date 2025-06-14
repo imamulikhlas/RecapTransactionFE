@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { LayoutDashboard, ListOrdered, PieChart, Settings, Menu, X, LogOut, FileText, Flame } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import type { User as SupabaseUser} from "@supabase/auth-js"
 
 
