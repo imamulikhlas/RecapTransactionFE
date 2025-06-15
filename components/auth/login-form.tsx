@@ -84,7 +84,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               />
             </motion.div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              TransactionHub
+              TransHub
             </CardTitle>
             <CardDescription className="text-slate-400 text-base">
               {isLogin

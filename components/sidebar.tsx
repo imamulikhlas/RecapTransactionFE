@@ -98,7 +98,7 @@ export default function Sidebar({ activeView, onViewChange, isMobile, user, onLo
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <img src="assets/logo.png" alt="Logo" className="w-full h-full object-cover" /> 
             </div>
-            <h1 className="text-xl font-semibold tracking-tight">TransactionHub</h1>
+            <h1 className="text-xl font-semibold tracking-tight">TransHub</h1>
           </div>
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={toggleSidebar}>

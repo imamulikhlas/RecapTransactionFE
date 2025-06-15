@@ -108,7 +108,7 @@ export default function RoastDetails({ roastId, userId, onBackClick, onTransacti
   const handleCopyRoast = async () => {
     if (!roast) return
 
-    const text = `${getRoastTitle(roast.roast_type)}\n\n${roast.roast_text}\n\n- TransactionHub AI 🤖`
+    const text = `${getRoastTitle(roast.roast_type)}\n\n${roast.roast_text}\n\n- TransHub AI 🤖`
 
     try {
       await navigator.clipboard.writeText(text)

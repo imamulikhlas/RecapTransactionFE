@@ -181,30 +181,49 @@ export default function Settings({ userId }: SettingsProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Alert className="bg-blue-900/20 border-blue-800">
-          <Info className="h-4 w-4 text-blue-400" />
-          <AlertDescription className="text-blue-300">
-            <div className="space-y-2">
-              <p className="font-medium">How to get Gmail App Password:</p>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
-                <li>Go to your Google Account settings</li>
-                <li>Enable 2-Step Verification if not already enabled</li>
-                <li>Go to Security → App passwords</li>
-                <li>Generate a new app password for "Mail"</li>
-                <li>Use that 16-character password below</li>
-              </ol>
-              <a
-                href="https://support.google.com/accounts/answer/185833"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm font-medium"
-              >
-                Learn more about App Passwords
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-          </AlertDescription>
-        </Alert>
+      <Alert className="bg-blue-900/20 border-blue-800">
+        <Info className="h-4 w-4 text-blue-400" />
+        <AlertDescription className="text-blue-300">
+          <div className="space-y-2">
+            <p className="font-medium">How to get Gmail App Password:</p>
+            <ol className="list-decimal list-inside space-y-1 text-sm">
+              <li>Go to your →{" "}
+                <a
+                  href="https://myaccount.google.com/security"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:underline"
+                >
+                  Google Account settings
+                </a>
+              </li>
+              <li>Enable 2-Step Verification if not already enabled</li>
+              <li>
+                Go to Security →{" "}
+                <a
+                  href="https://myaccount.google.com/apppasswords"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:underline"
+                >
+                  App passwords
+                </a>
+              </li>
+              <li>Generate a new app password for "TransHub"</li>
+              <li>Use that 16-character password below</li>
+            </ol>
+            <a
+              href="https://support.google.com/accounts/answer/185833"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm font-medium"
+            >
+              Learn more about App Passwords
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </AlertDescription>
+      </Alert>
       </motion.div>
 
       <motion.div
