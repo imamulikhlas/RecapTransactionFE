@@ -284,16 +284,29 @@ export default function Settings({ userId }: SettingsProps) {
                     type={showPassword ? "text" : "password"}
                     placeholder="16-character app password"
                     value={formData.email_pass}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const cleaned = e.target.value
+                        .replace(/\s+/g, "")
+                        .slice(0, 16);
                       setFormData({
                         ...formData,
-                        email_pass: e.target.value.replace(/\s+/g, ""),
-                      })
-                    }
+                        email_pass: cleaned,
+                      });
+                    }}
+                    onPaste={(e) => {
+                      e.preventDefault(); 
+                      const text = e.clipboardData.getData("text/plain");
+                      const cleaned = text.replace(/\s+/g, "").slice(0, 16); 
+                      setFormData({
+                        ...formData,
+                        email_pass: cleaned,
+                      });
+                    }}
                     disabled={!isEditing}
                     className="pl-10 pr-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 disabled:opacity-60"
                     maxLength={16}
                   />
+
                   {isEditing && (
                     <button
                       type="button"
