@@ -12,14 +12,20 @@ export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
-      return NextResponse.json({ error: "Invalid Content-Type" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid Content-Type" },
+        { status: 400 }
+      );
     }
 
     const body = await req.json();
     const { user_id, plan_id, email, plan_name, amount } = body;
 
     if (!user_id || !plan_id || !email || !plan_name || !amount) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     // 🧠 Cari UUID dari slug (plan_id yang dikirim frontend adalah SLUG)
@@ -30,7 +36,10 @@ export async function POST(req: Request) {
       .single();
 
     if (planError || !planData) {
-      return NextResponse.json({ error: "Plan tidak ditemukan" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Plan tidak ditemukan" },
+        { status: 400 }
+      );
     }
 
     const planUuid = planData.id;
@@ -55,12 +64,16 @@ export async function POST(req: Request) {
       },
       item_details: [
         {
-          id: plan_id, // ini slug, tidak masalah
+          id: plan_id,
           price: amount,
           quantity: 1,
           name: `Langganan ${plan_name}`,
         },
       ],
+      callbacks: {
+        // ⬅️ tambahkan ini untuk redirect ke halaman kamu
+        finish: `${process.env.NEXT_PUBLIC_BASE_URL}/subscription/success`,
+      },
     });
 
     // 💾 Simpan transaksi ke Supabase
@@ -80,7 +93,10 @@ export async function POST(req: Request) {
     if (transaction?.redirect_url) {
       return NextResponse.json({ redirect_url: transaction.redirect_url });
     } else {
-      return NextResponse.json({ error: "Gagal mendapatkan redirect URL " }, { status: 500 });
+      return NextResponse.json(
+        { error: "Gagal mendapatkan redirect URL " },
+        { status: 500 }
+      );
     }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
