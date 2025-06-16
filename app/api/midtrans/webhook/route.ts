@@ -9,15 +9,17 @@ const supabase = createClient(
 export async function POST(req: Request) {
   const payload = await req.json();
 
+  console.log("✅ Midtrans Webhook Payload:", payload);
+
   const {
     order_id,
     transaction_status,
     payment_type,
     transaction_id,
-    gross_amount
+    gross_amount,
   } = payload;
 
-  // Update status transaksi
+  // Update transaksi
   await supabase.from("payment_transactions")
     .update({
       status: transaction_status,
@@ -27,20 +29,24 @@ export async function POST(req: Request) {
     })
     .eq("midtrans_order_id", order_id);
 
-  // Aktifkan subscription jika sukses bayar
+  // Update subscription jika sukses
   if (transaction_status === "settlement") {
-    const { data: tx } = await supabase
+    const { data: tx, error } = await supabase
       .from("payment_transactions")
       .select("user_id, plan_id")
       .eq("midtrans_order_id", order_id)
       .single();
 
-    await supabase.from("user_subscriptions").upsert({
-      user_id: tx.user_id,
-      plan_id: tx.plan_id,
-      is_active: true,
-      started_at: new Date().toISOString(),
-    }, { onConflict: ['user_id'] });
+    if (!error && tx) {
+      await supabase.from("user_subscriptions").upsert({
+        user_id: tx.user_id,
+        plan_id: tx.plan_id,
+        is_active: true,
+        started_at: new Date().toISOString(),
+      }, {
+        onConflict: ['user_id']
+      });
+    }
   }
 
   return NextResponse.json({ message: "Webhook received" });
