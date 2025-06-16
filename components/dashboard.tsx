@@ -16,6 +16,7 @@ import Settings from "@/components/settings"
 import Logs from "@/components/logs"
 import TransactionRoasts from "@/components/transaction-roasts"
 import RoastDetails from "@/components/roast-details"
+import SubscriptionPlans from "@/components/subscription/subscription-plans";
 import type { TransactionRoast } from "@/lib/supabase"
 
 export default function Dashboard() {
@@ -200,6 +201,7 @@ export default function Dashboard() {
                 onTransactionClick={handleTransactionClick}
               />
             )}
+            {activeView === "subscription" && <SubscriptionPlans user={user} />}
           </motion.div>
         </AnimatePresence>
       </main>
