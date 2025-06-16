@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { LayoutDashboard, ListOrdered, PieChart, Settings, Menu, X, LogOut, FileText, Flame } from "lucide-react"
+import { LayoutDashboard, ListOrdered, PieChart, Settings, Menu, X, LogOut, FileText, Flame, CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils/utils"
@@ -27,6 +27,7 @@ export default function Sidebar({ activeView, onViewChange, isMobile, user, onLo
     { id: "roasts", label: "Roasts", icon: Flame },
     { id: "settings", label: "Settings", icon: Settings },
     { id: "logs", label: "Logs", icon: FileText },
+    { id: "subscription", label: "Subscription", icon: CreditCard }, 
   ]
 
   const toggleSidebar = () => {
