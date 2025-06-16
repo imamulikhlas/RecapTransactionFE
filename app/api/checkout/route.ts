@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     if (transaction?.redirect_url) {
       return NextResponse.json({ redirect_url: transaction.redirect_url });
     } else {
-      return NextResponse.json({ error: "Gagal mendapatkan redirect URL" }, { status: 500 });
+      return NextResponse.json({ error: "Gagal mendapatkan redirect URL " }, { status: 500 });
     }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
