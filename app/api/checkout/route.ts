@@ -12,23 +12,17 @@ export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
-      return NextResponse.json(
-        { error: "Invalid Content-Type" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid Content-Type" }, { status: 400 });
     }
 
     const body = await req.json();
     const { user_id, plan_id, email, plan_name, amount } = body;
 
     if (!user_id || !plan_id || !email || !plan_name || !amount) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // 🧠 Cari UUID dari slug (plan_id yang dikirim frontend adalah SLUG)
+    // 🔎 Ambil UUID plan berdasarkan slug
     const { data: planData, error: planError } = await supabase
       .from("subscription_plans")
       .select("id")
@@ -36,19 +30,35 @@ export async function POST(req: Request) {
       .single();
 
     if (planError || !planData) {
-      return NextResponse.json(
-        { error: "Plan tidak ditemukan" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Plan tidak ditemukan" }, { status: 400 });
     }
 
     const planUuid = planData.id;
 
-    // 🔐 Bikin order_id pendek agar tidak error di Midtrans
-    const shortId = crypto.randomBytes(8).toString("hex");
-    const orderId = `sub-${shortId}`; // max ~20 karakter
+    // ❗ Cek apakah masih ada transaksi aktif (pending/challenge)
+    const { data: existingTx, error: txError } = await supabase
+      .from("payment_transactions")
+      .select("*")
+      .eq("user_id", user_id)
+      .in("status", ["pending", "challenge"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
 
-    // 🔁 Buat transaksi ke Midtrans
+    if (existingTx) {
+      return NextResponse.json({
+        error: "Masih ada transaksi yang belum selesai.",
+        existing_transaction: {
+          midtrans_order_id: existingTx.midtrans_order_id,
+          snap_redirect_url: existingTx.snap_redirect_url,
+        },
+      }, { status: 400 });
+    }
+
+    // 🔐 Buat order_id unik & pendek
+    const shortId = crypto.randomBytes(8).toString("hex");
+    const orderId = `sub-${shortId}`;
+
     const snap = new midtransClient.Snap({
       isProduction: false,
       serverKey: process.env.MIDTRANS_SERVER_KEY!,
@@ -71,34 +81,30 @@ export async function POST(req: Request) {
         },
       ],
       callbacks: {
-        // ⬅️ tambahkan ini untuk redirect ke halaman kamu
         finish: `${process.env.NEXT_PUBLIC_BASE_URL}/subscription/success`,
       },
     });
 
-    // 💾 Simpan transaksi ke Supabase
-    const { error } = await supabase.from("payment_transactions").insert({
+    const redirectUrl = transaction.redirect_url;
+
+    // 💾 Simpan ke payment_transactions
+    const { error: insertError } = await supabase.from("payment_transactions").insert({
       user_id,
-      plan_id: planUuid, // pakai UUID
+      plan_id: planUuid,
       midtrans_order_id: orderId,
       status: "pending",
       gross_amount: amount,
+      snap_redirect_url: redirectUrl, // <- penting!
     });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (insertError) {
+      return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
-    // ✅ Beri response redirect_url
-    if (transaction?.redirect_url) {
-      return NextResponse.json({ redirect_url: transaction.redirect_url });
-    } else {
-      return NextResponse.json(
-        { error: "Gagal mendapatkan redirect URL " },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({ redirect_url: redirectUrl });
+
   } catch (error: any) {
+    console.error("❌ Checkout Error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
