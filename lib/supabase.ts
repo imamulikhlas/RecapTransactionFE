@@ -104,6 +104,37 @@ export async function getCurrentUser() {
   return user
 }
 
+export async function resetPassword(email: string) {
+  if (!supabase) throw new Error("Supabase not configured")
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
+
+  return { error }
+}
+
+export async function resendConfirmation(email: string) {
+  if (!supabase) throw new Error("Supabase not configured")
+
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: email,
+  })
+
+  return { error }
+}
+
+export async function updatePassword(newPassword: string) {
+  if (!supabase) throw new Error("Supabase not configured")
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  })
+
+  return { error }
+}
+
 // Mock data for when Supabase is not configured
 const mockTransactions: Transaction[] = [
   {
