@@ -1,7 +1,10 @@
-import SuccessTransactionClient from "./client";
-
-export const dynamic = "force-dynamic";
+import { Suspense } from "react"
+import EnhancedSuccessClient from "./enhanced-client"
 
 export default function SuccessPage() {
-  return <SuccessTransactionClient />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EnhancedSuccessClient />
+    </Suspense>
+  )
 }

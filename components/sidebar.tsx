@@ -28,7 +28,6 @@ export default function Sidebar({ activeView, onViewChange, isMobile, user, onLo
     { id: "settings", label: "Settings", icon: Settings },
     { id: "logs", label: "Logs", icon: FileText },
     { id: "subscription", label: "Subscription", icon: Star },
-    { id: "payment-history", label: "Payment History", icon: Receipt },
   ]
 
   const toggleSidebar = () => {

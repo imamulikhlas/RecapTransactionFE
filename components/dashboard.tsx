@@ -24,7 +24,6 @@ import Logs from "@/components/logs";
 import TransactionRoasts from "@/components/transaction-roasts";
 import RoastDetails from "@/components/roast-details";
 import SubscriptionDashboard  from "@/components/subscription/subscription";
-import PaymentHistory   from "@/components/subscription/payment-history";
 import type { TransactionRoast } from "@/lib/supabase";
 
 export default function Dashboard() {
@@ -237,9 +236,6 @@ export default function Dashboard() {
               />
             )}
             {activeView === "subscription" && <SubscriptionDashboard user={user} />}
-            {activeView === "payment-history" && (
-              <PaymentHistory userId={user?.id} />
-            )}
           </motion.div>
         </AnimatePresence>
       </main>
