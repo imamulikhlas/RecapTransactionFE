@@ -1,7 +1,10 @@
-import FailedTransactionClient from "./client";
-
-export const dynamic = "force-dynamic";
+import { Suspense } from "react"
+import EnhancedFailedClient from "./enhanced-client"
 
 export default function FailedPage() {
-  return <FailedTransactionClient />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EnhancedFailedClient />
+    </Suspense>
+  )
 }
