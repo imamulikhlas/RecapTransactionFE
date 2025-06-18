@@ -19,6 +19,7 @@ import RoastDetails from "@/components/roast-details"
 import SubscriptionDashboard from "@/components/subscription/subscription"
 import type { TransactionRoast } from "@/lib/supabase"
 import Profile from "@/components/profile"
+import OnboardingWrapper from "@/components/onboarding/onboarding-wrapper"
 
 export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -132,81 +133,85 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar
-        activeView={activeView}
-        onViewChange={handleViewChange}
-        isMobile={isMobile}
-        user={user}
-        onLogout={handleLogout}
-      />
+    <OnboardingWrapper userId={user?.id}>
+      <div className="flex h-screen bg-background">
+        <Sidebar
+          activeView={activeView}
+          onViewChange={handleViewChange}
+          isMobile={isMobile}
+          user={user}
+          onLogout={handleLogout}
+        />
 
-      <main className="flex-1 overflow-hidden">
-        {!supabase && (
-          <Alert className="m-4 border-blue-200 bg-blue-50">
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Demo Mode:</strong> Supabase is not configured. Using mock data for demonstration. Add your
-              Supabase credentials to connect to your real database.
-            </AlertDescription>
-          </Alert>
-        )}
+        <main className="flex-1 overflow-hidden">
+          {!supabase && (
+            <Alert className="m-4 border-blue-200 bg-blue-50">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Demo Mode:</strong> Supabase is not configured. Using mock data for demonstration. Add your
+                Supabase credentials to connect to your real database.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeView}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              duration: 0.4,
-            }}
-            className="h-full overflow-auto p-4 md:p-8"
-          >
-            {activeView === "overview" && (
-              <Overview
-                transactions={transactions}
-                onTransactionClick={handleTransactionClick}
-                loading={loading}
-                userId={user?.id}
-                onViewAllRoasts={handleViewAllRoasts}
-                onViewRoastDetails={handleViewRoastDetails}
-                onViewChange={handleViewChange}
-              />
-            )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeView}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+                duration: 0.4,
+              }}
+              className="h-full overflow-auto p-4 md:p-8"
+            >
+              {activeView === "overview" && (
+                <Overview
+                  transactions={transactions}
+                  onTransactionClick={handleTransactionClick}
+                  loading={loading}
+                  userId={user?.id}
+                  onViewAllRoasts={handleViewAllRoasts}
+                  onViewRoastDetails={handleViewRoastDetails}
+                  onViewChange={handleViewChange}
+                />
+              )}
 
-            {activeView === "transactions" && (
-              <TransactionList onTransactionClick={handleTransactionClick} userId={user?.id} />
-            )}
+              {activeView === "transactions" && (
+                <TransactionList onTransactionClick={handleTransactionClick} userId={user?.id} />
+              )}
 
-            {activeView === "analytics" && <Analytics userId={user?.id} onTransactionClick={handleTransactionClick} />}
+              {activeView === "analytics" && (
+                <Analytics userId={user?.id} onTransactionClick={handleTransactionClick} />
+              )}
 
-            {activeView === "details" && selectedTransaction && (
-              <TransactionDetails transaction={selectedTransaction} onBackClick={handleBackClick} />
-            )}
+              {activeView === "details" && selectedTransaction && (
+                <TransactionDetails transaction={selectedTransaction} onBackClick={handleBackClick} />
+              )}
 
-            {activeView === "settings" && <Settings userId={user?.id} />}
+              {activeView === "settings" && <Settings userId={user?.id} />}
 
-            {activeView === "logs" && <Logs userId={user?.id} />}
+              {activeView === "logs" && <Logs userId={user?.id} />}
 
-            {activeView === "roasts" && <TransactionRoasts userId={user?.id} onRoastClick={handleRoastClick} />}
+              {activeView === "roasts" && <TransactionRoasts userId={user?.id} onRoastClick={handleRoastClick} />}
 
-            {activeView === "roast-details" && selectedRoast && (
-              <RoastDetails
-                roastId={selectedRoast.id}
-                userId={user?.id}
-                onBackClick={handleRoastBackClick}
-                onTransactionClick={handleTransactionClick}
-              />
-            )}
-            {activeView === "profile" && <Profile userId={user?.id} user={user} />}
-            {activeView === "subscription" && <SubscriptionDashboard user={user} />}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </div>
+              {activeView === "roast-details" && selectedRoast && (
+                <RoastDetails
+                  roastId={selectedRoast.id}
+                  userId={user?.id}
+                  onBackClick={handleRoastBackClick}
+                  onTransactionClick={handleTransactionClick}
+                />
+              )}
+              {activeView === "profile" && <Profile userId={user?.id} user={user} />}
+              {activeView === "subscription" && <SubscriptionDashboard user={user} />}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+    </OnboardingWrapper>
   )
 }
