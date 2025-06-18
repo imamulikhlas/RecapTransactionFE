@@ -216,8 +216,8 @@ export default function ModernSettings({ userId }: SettingsProps) {
       </div>
 
       {/* Glowing orbs */}
-      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse" />
-      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse" />
+      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
+      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
         {/* Header Section */}
