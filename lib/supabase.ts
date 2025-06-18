@@ -459,6 +459,29 @@ export async function getTransactions(
   return result.data
 }
 
+// New function for getting recent transactions
+export async function getRecentTransactions(limit = 5, userId?: string): Promise<Transaction[]> {
+  // Use mock data if Supabase is not configured
+  if (!supabase) {
+    return mockTransactions.slice(0, limit)
+  }
+
+  let query = supabase.from("transactions").select("*").order("date", { ascending: false }).limit(limit)
+
+  if (userId) {
+    query = query.eq("user_id", userId)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error fetching recent transactions:", error)
+    return []
+  }
+
+  return data as Transaction[]
+}
+
 export async function getTransactionById(id: number, userId?: string) {
   // Use mock data if Supabase is not configured
   if (!supabase) {

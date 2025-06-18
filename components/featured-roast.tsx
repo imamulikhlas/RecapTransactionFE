@@ -1,72 +1,68 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Flame, TrendingUp, AlertTriangle, Sparkles, Coffee, Clock, Eye, ArrowRight, Zap, Star } from "lucide-react"
-import type { TransactionRoast } from "@/lib/supabase"
-import { formatDate } from "@/lib/utils/utils"
+import { Flame, Sparkles, Coffee, TrendingUp, AlertTriangle, ArrowRight } from "lucide-react"
+import { getLatestRoasts, type TransactionRoast } from "@/lib/supabase"
 
 interface FeaturedRoastProps {
-  roast: TransactionRoast
-  onViewAll: () => void
-  onViewDetails: () => void
+  userId?: string
+  onViewAllRoasts: () => void
+  onViewRoastDetails: (roastId: number) => void
 }
 
-export default function FeaturedRoast({ roast, onViewAll, onViewDetails }: FeaturedRoastProps) {
+export default function FeaturedRoast({ userId, onViewAllRoasts, onViewRoastDetails }: FeaturedRoastProps) {
+  const [latestRoast, setLatestRoast] = useState<TransactionRoast | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchLatestRoast = async () => {
+      setLoading(true)
+      try {
+        const roasts = await getLatestRoasts(userId, 1)
+        if (roasts.length > 0) {
+          setLatestRoast(roasts[0])
+        }
+      } catch (error) {
+        console.error("Error fetching latest roast:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLatestRoast()
+  }, [userId])
+
   const getRoastIcon = (type: string) => {
     switch (type) {
       case "spending_spree":
-        return <Flame className="h-6 w-6 text-white" />
+        return <Flame className="h-5 w-5 text-red-400" />
       case "income_flex":
-        return <TrendingUp className="h-6 w-6 text-white" />
+        return <TrendingUp className="h-5 w-5 text-green-400" />
       case "budget_reality":
-        return <AlertTriangle className="h-6 w-6 text-white" />
+        return <AlertTriangle className="h-5 w-5 text-yellow-400" />
       case "savings_hero":
-        return <Sparkles className="h-6 w-6 text-white" />
+        return <Sparkles className="h-5 w-5 text-blue-400" />
       default:
-        return <Zap className="h-6 w-6 text-white" />
+        return <Coffee className="h-5 w-5 text-purple-400" />
     }
   }
 
-  const getRoastColor = (type: string) => {
+  const getRoastGradient = (type: string) => {
     switch (type) {
       case "spending_spree":
-        return {
-          gradient: "from-red-500/30 via-orange-500/20 to-pink-500/30",
-          border: "border-red-500/40",
-          glow: "shadow-red-500/20",
-          iconBg: "from-red-600 to-orange-600",
-        }
+        return "from-red-500/20 to-orange-500/20 border-red-500/30"
       case "income_flex":
-        return {
-          gradient: "from-green-500/30 via-emerald-500/20 to-teal-500/30",
-          border: "border-green-500/40",
-          glow: "shadow-green-500/20",
-          iconBg: "from-green-600 to-emerald-600",
-        }
+        return "from-green-500/20 to-emerald-500/20 border-green-500/30"
       case "budget_reality":
-        return {
-          gradient: "from-yellow-500/30 via-amber-500/20 to-orange-500/30",
-          border: "border-yellow-500/40",
-          glow: "shadow-yellow-500/20",
-          iconBg: "from-yellow-600 to-amber-600",
-        }
+        return "from-yellow-500/20 to-amber-500/20 border-yellow-500/30"
       case "savings_hero":
-        return {
-          gradient: "from-blue-500/30 via-cyan-500/20 to-indigo-500/30",
-          border: "border-blue-500/40",
-          glow: "shadow-blue-500/20",
-          iconBg: "from-blue-600 to-cyan-600",
-        }
+        return "from-blue-500/20 to-cyan-500/20 border-blue-500/30"
       default:
-        return {
-          gradient: "from-purple-500/30 via-pink-500/20 to-indigo-500/30",
-          border: "border-purple-500/40",
-          glow: "shadow-purple-500/20",
-          iconBg: "from-purple-600 to-pink-600",
-        }
+        return "from-purple-500/20 to-pink-500/20 border-purple-500/30"
     }
   }
 
@@ -85,162 +81,87 @@ export default function FeaturedRoast({ roast, onViewAll, onViewDetails }: Featu
     }
   }
 
-  const colors = getRoastColor(roast.roast_type)
+  if (loading) {
+    return (
+      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-3">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 1,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            >
+              <Flame className="h-6 w-6 text-purple-400" />
+            </motion.div>
+            <span className="text-slate-400">Loading your latest roast...</span>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!latestRoast) {
+    return (
+      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Flame className="h-5 w-5 text-orange-400" />
+            Financial Roast
+          </CardTitle>
+          <CardDescription>Get roasted about your spending habits</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center py-8">
+          <Coffee className="h-12 w-12 mx-auto mb-4 text-slate-500" />
+          <p className="text-slate-400 mb-4">No roasts available yet</p>
+          <Button
+            onClick={onViewAllRoasts}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+          >
+            Get Your First Roast
+            <Flame className="h-4 w-4 ml-2" />
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, type: "spring", stiffness: 100 }}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+    <Card
+      className={`bg-gradient-to-br ${getRoastGradient(latestRoast.roast_type)} backdrop-blur-sm hover:shadow-lg transition-all duration-300 cursor-pointer`}
+      onClick={() => onViewRoastDetails(latestRoast.id)}
     >
-      <Card
-        className={`relative bg-gradient-to-br ${colors.gradient} ${colors.border} backdrop-blur-sm overflow-hidden hover:shadow-2xl ${colors.glow} transition-all duration-500 group`}
-      >
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fillRule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fillOpacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] animate-pulse"></div>
-        </div>
-
-        {/* Floating Particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white/20 rounded-full"
-              animate={{
-                y: [0, -100],
-                opacity: [0, 1, 0],
-                scale: [0, 1, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Number.POSITIVE_INFINITY,
-                delay: i * 0.5,
-                ease: "easeOut",
-              }}
-              style={{
-                left: `${20 + i * 12}%`,
-                top: "100%",
-              }}
-            />
-          ))}
-        </div>
-
-        <CardHeader className="pb-4 relative z-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <motion.div
-                animate={{
-                  rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  repeatDelay: 2,
-                }}
-                className={`w-14 h-14 bg-gradient-to-r ${colors.iconBg} rounded-full flex items-center justify-center shadow-lg relative`}
-              >
-                {getRoastIcon(roast.roast_type)}
-
-                {/* Pulse Ring */}
-                <motion.div
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.5, 0, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Number.POSITIVE_INFINITY,
-                  }}
-                  className={`absolute inset-0 rounded-full bg-gradient-to-r ${colors.iconBg} opacity-30`}
-                />
-              </motion.div>
-
-              <div>
-                <CardTitle className="text-white text-xl mb-1 flex items-center gap-2">
-                  {getRoastTitle(roast.roast_type)}
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                  >
-                    <Star className="h-4 w-4 text-yellow-300" />
-                  </motion.div>
-                </CardTitle>
-                <CardDescription className="text-slate-200 flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {formatDate(roast.roast_time)} • Latest AI Roast
-                </CardDescription>
-              </div>
-            </div>
-
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="bg-white/15 hover:bg-white/25 text-white border-white/30 backdrop-blur-sm"
-                onClick={onViewAll}
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                View All
-              </Button>
-            </motion.div>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {getRoastIcon(latestRoast.roast_type)}
+            <CardTitle className="text-white text-sm">Latest Roast</CardTitle>
           </div>
-        </CardHeader>
-
-        <CardContent className="relative z-10">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="space-y-5"
+          <Badge variant="outline" className="text-xs border-white/20 text-white/80">
+            {getRoastTitle(latestRoast.roast_type)}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-white/90 text-sm leading-relaxed line-clamp-3">{latestRoast.roast_text}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-white/60">{new Date(latestRoast.created_at).toLocaleDateString()}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewAllRoasts()
+            }}
+            className="text-white/80 hover:text-white hover:bg-white/10"
           >
-            {/* Roast Text */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="bg-black/30 rounded-xl p-5 backdrop-blur-md border border-white/10 group-hover:bg-black/40 transition-all duration-300"
-            >
-              <p className="text-white text-lg leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-300">
-                {roast.roast_text}
-              </p>
-            </motion.div>
-
-            {/* Bottom Section */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Badge variant="outline" className="border-white/40 text-white bg-white/10 backdrop-blur-sm">
-                  <Coffee className="h-3 w-3 mr-1" />
-                  {roast.tx_ids?.length || 0} transactions
-                </Badge>
-
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                  className="flex items-center"
-                >
-                  {getRoastIcon(roast.roast_type)}
-                </motion.div>
-              </div>
-
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="flex items-center text-white/90 hover:text-white cursor-pointer group"
-                onClick={onViewDetails}
-              >
-                <span className="text-sm mr-2 font-medium">Read full roast</span>
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </motion.div>
-            </div>
-          </motion.div>
-        </CardContent>
-
-        {/* Hover Glow Effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          initial={false}
-        />
-      </Card>
-    </motion.div>
+            View All
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
