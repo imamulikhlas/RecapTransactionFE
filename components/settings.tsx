@@ -273,34 +273,61 @@ export default function ModernSettings({ userId }: SettingsProps) {
                   <h3 className="text-lg font-semibold text-blue-300">
                     How to get Gmail App Password
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
                         <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                           1
                         </div>
                         <span className="text-sm text-slate-300">
-                          Enable 2-Step Verification
+                          Enable 2-Step Verification{" "}
+                          <a
+                            href="https://myaccount.google.com/security"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:underline"
+                          >
+                            Google Account settings
+                          </a>
                         </span>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
                         <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                           2
                         </div>
-                        <span className="text-sm text-slate-300">
-                          Go to App Passwords
+                        <span className="text-sm text-slate-300 ml-2">
+                          <li>Go to Security →{" "}
+                          <a
+                            href="https://myaccount.google.com/apppasswords"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:underline"
+                          >
+                            App passwords
+                          </a>
+                          </li>
+                          <li>Generate a new app password for "TransHub"</li>
+                          <li>Use that 16-character password below</li>
                         </span>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          3
+                        <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          <Info className="h-3 w-3" />
                         </div>
                         <span className="text-sm text-slate-300">
-                          Generate new password
+                          <a
+                            href="https://support.google.com/accounts/answer/185833"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm font-medium"
+                          >
+                            Learn more about App Passwords
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
                         </span>
                       </div>
                     </div>
-                    <div className="space-y-3">
+                    {/* <div className="space-y-3">
                       <a
                         href="https://myaccount.google.com/security"
                         target="_blank"
@@ -331,7 +358,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
                         Learn More
                         <ExternalLink className="h-3 w-3" />
                       </a>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
