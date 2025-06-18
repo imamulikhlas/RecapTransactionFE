@@ -210,7 +210,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
       {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
@@ -234,8 +234,8 @@ export default function ModernSettings({ userId }: SettingsProps) {
       </div>
 
       {/* Glowing orbs */}
-      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
-      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
+      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-[-1]" />
+      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-[-1]" />
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
         {/* Header Section */}
