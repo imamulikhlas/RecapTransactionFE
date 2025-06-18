@@ -266,7 +266,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
         >
           <Card className="glass border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
             <CardContent className="p-6">
-              <div className="gap-4">
+              <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-500/10 rounded-full">
                   <Info className="h-6 w-6 text-blue-400" />
                 </div>
