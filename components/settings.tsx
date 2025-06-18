@@ -39,8 +39,7 @@ import {
   saveEmailSettings,
   type EmailSettings,
 } from "@/lib/supabase";
-import TutorialTrigger from "@/components/tutorial/tutorial-trigger"
-
+import TutorialTrigger from "@/components/tutorial/tutorial-trigger";
 
 interface SettingsProps {
   userId?: string;
@@ -210,7 +209,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
       {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
@@ -234,8 +233,8 @@ export default function ModernSettings({ userId }: SettingsProps) {
       </div>
 
       {/* Glowing orbs */}
-      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-[-1]" />
-      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-[-1]" />
+      <div className="fixed top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
+      <div className="fixed bottom-20 right-20 w-40 h-40 bg-purple-500/10 rounded-full blur-xl animate-pulse pointer-events-none z-0" />
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
         {/* Header Section */}
@@ -267,7 +266,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
         >
           <Card className="glass border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
             <CardContent className="p-6">
-              <div className="flex items-start gap-4">
+              <div className="gap-4">
                 <div className="p-3 bg-blue-500/10 rounded-full">
                   <Info className="h-6 w-6 text-blue-400" />
                 </div>
@@ -278,10 +277,12 @@ export default function ModernSettings({ userId }: SettingsProps) {
                   <div className="grid gap-4">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <TutorialTrigger
-                          userId={userId}
-                          onGoToSettings={() => {}}
-                        />
+                        <div className="relative z-10">
+                          <TutorialTrigger
+                            userId={userId}
+                            onGoToSettings={() => {}}
+                          />
+                        </div>
                       </div>
                     </div>
                     {/* <div className="space-y-3">
@@ -322,10 +323,7 @@ export default function ModernSettings({ userId }: SettingsProps) {
             </CardContent>
           </Card>
         </motion.div>
-                      <TutorialTrigger
-                          userId={userId}
-                          onGoToSettings={() => {}}
-                        />
+
         {/* Main Configuration Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -579,10 +577,6 @@ export default function ModernSettings({ userId }: SettingsProps) {
               </div>
 
               {/* Action Buttons */}
-              <TutorialTrigger
-                          userId={userId}
-                          onGoToSettings={() => {}}
-                        />
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -632,13 +626,8 @@ export default function ModernSettings({ userId }: SettingsProps) {
                     <Edit className="mr-2 h-4 w-4" />
                     Edit Settings
                   </Button>
-                  
                 )}
               </motion.div>
-              <TutorialTrigger
-                          userId={userId}
-                          onGoToSettings={() => {}}
-                        />
 
               {/* Connection Status */}
               {!isEditing && settings && (
@@ -662,10 +651,6 @@ export default function ModernSettings({ userId }: SettingsProps) {
                     IMAP server with SSL encryption to ensure your data remains
                     protected.
                   </p>
-                  <TutorialTrigger
-                          userId={userId}
-                          onGoToSettings={() => {}}
-                        />
                 </motion.div>
               )}
             </CardContent>
