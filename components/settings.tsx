@@ -322,7 +322,10 @@ export default function ModernSettings({ userId }: SettingsProps) {
             </CardContent>
           </Card>
         </motion.div>
-
+                      <TutorialTrigger
+                          userId={userId}
+                          onGoToSettings={() => {}}
+                        />
         {/* Main Configuration Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -576,6 +579,10 @@ export default function ModernSettings({ userId }: SettingsProps) {
               </div>
 
               {/* Action Buttons */}
+              <TutorialTrigger
+                          userId={userId}
+                          onGoToSettings={() => {}}
+                        />
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -625,8 +632,13 @@ export default function ModernSettings({ userId }: SettingsProps) {
                     <Edit className="mr-2 h-4 w-4" />
                     Edit Settings
                   </Button>
+                  
                 )}
               </motion.div>
+              <TutorialTrigger
+                          userId={userId}
+                          onGoToSettings={() => {}}
+                        />
 
               {/* Connection Status */}
               {!isEditing && settings && (
@@ -650,6 +662,10 @@ export default function ModernSettings({ userId }: SettingsProps) {
                     IMAP server with SSL encryption to ensure your data remains
                     protected.
                   </p>
+                  <TutorialTrigger
+                          userId={userId}
+                          onGoToSettings={() => {}}
+                        />
                 </motion.div>
               )}
             </CardContent>
