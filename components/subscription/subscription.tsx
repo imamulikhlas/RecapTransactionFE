@@ -294,6 +294,8 @@ export default function ModernSubscription({ user }: Props) {
             transition={{ delay: 0.1 }}
             className="flex justify-center"
           >
+                                                    <div className="relative z-10">
+
             <TabsList className="grid w-full grid-cols-2 lg:w-[400px] bg-slate-800/50 border border-slate-700/50">
               <TabsTrigger
                 value="plans"
@@ -306,10 +308,12 @@ export default function ModernSubscription({ user }: Props) {
                 value="history"
                 className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600"
               >
+
                 <CreditCard className="h-4 w-4" />
                 Payment History
               </TabsTrigger>
             </TabsList>
+            </div>
           </motion.div>
 
           <TabsContent value="plans" className="space-y-8">
