@@ -41,7 +41,7 @@ interface TransactionDetailsProps {
 
 export default function TransactionDetails({ transaction, onBackClick }: TransactionDetailsProps) {
   const [copied, setCopied] = useState(false)
-  const isExpense = transaction.amount < 0
+  const isExpense = transaction.transaction_type == "expense"
   const amountColor = isExpense ? "text-red-500" : "text-emerald-500"
   const amountBg = isExpense
     ? "from-red-500/10 via-red-500/5 to-transparent"
@@ -285,7 +285,7 @@ export default function TransactionDetails({ transaction, onBackClick }: Transac
                     },
                     {
                       icon: Clock,
-                      label: "Created At",
+                      label: "Bot Collected at",
                       value: formatDate(transaction.created_at),
                       color: "from-slate-500 to-slate-600",
                     },
