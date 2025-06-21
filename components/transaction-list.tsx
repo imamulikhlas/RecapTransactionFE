@@ -468,7 +468,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                               <div className="flex items-center gap-3">
                                 <div
                                   className={`w-2 h-2 rounded-full ${
-                                    transaction.amount < 0 ? "bg-red-400" : "bg-green-400"
+                                    transaction.transaction_type == "expense" ? "bg-red-400" : "bg-green-400"
                                   }`}
                                 />
                                 {formatDate(transaction.date)}
@@ -477,7 +477,7 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                             <TableCell>
                               <div>
                                 <p className="font-medium text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                                  {transaction.description}
+                                  {transaction.note_to_user}
                                 </p>
                                 {transaction.reference && (
                                   <p className="text-xs text-slate-400 font-mono mt-1">{transaction.reference}</p>
@@ -508,14 +508,14 @@ export default function TransactionList({ onTransactionClick, userId }: Transact
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-2">
-                                {transaction.amount < 0 ? (
+                                {transaction.transaction_type == "expense" ? (
                                   <ArrowDownRight className="h-4 w-4 text-red-400" />
                                 ) : (
                                   <ArrowUpRight className="h-4 w-4 text-green-400" />
                                 )}
                                 <span
                                   className={`font-semibold ${
-                                    transaction.amount < 0 ? "text-red-400" : "text-green-400"
+                                    transaction.transaction_type == "expense" ? "text-red-400" : "text-green-400"
                                   }`}
                                 >
                                   {formatCurrency(transaction.amount)}

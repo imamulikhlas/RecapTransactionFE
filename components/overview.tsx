@@ -25,6 +25,7 @@ import { formatCurrency, formatDate } from "@/lib/utils/utils"
 import { getTransactionStats, getRecentTransactions, type Transaction } from "@/lib/supabase"
 import FeaturedRoast from "@/components/featured-roast"
 
+
 interface OverviewProps {
   transactions: Transaction[]
   onTransactionClick: (transaction: Transaction) => void
@@ -54,7 +55,7 @@ export default function Overview({
       try {
         const [statsData, recentData] = await Promise.all([
           getTransactionStats(userId),
-          getRecentTransactions(5, userId),
+          getRecentTransactions(5, userId)
         ])
         setStats(statsData)
         setRecentTransactions(recentData)
@@ -285,12 +286,12 @@ export default function Overview({
                       >
                         <div
                           className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            transaction.amount < 0
+                            transaction.transaction_type == "expense"
                               ? "bg-gradient-to-r from-red-500 to-pink-500"
                               : "bg-gradient-to-r from-green-500 to-emerald-500"
                           }`}
                         >
-                          {transaction.amount < 0 ? (
+                          {transaction.transaction_type == "expense" ? (
                             <ArrowDownRight className="h-5 w-5 text-white" />
                           ) : (
                             <ArrowUpRight className="h-5 w-5 text-white" />
@@ -312,7 +313,7 @@ export default function Overview({
                         <div className="text-right">
                           <p
                             className={`text-sm font-semibold ${
-                              transaction.amount < 0 ? "text-red-400" : "text-green-400"
+                              transaction.transaction_type == "expense"? "text-red-400" : "text-green-400"
                             }`}
                           >
                             {formatCurrency(transaction.amount)}

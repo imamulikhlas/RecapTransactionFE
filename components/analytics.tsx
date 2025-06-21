@@ -37,8 +37,8 @@ import {
 } from "lucide-react"
 import CategoryTransactionsModal from "@/components/category-transactions-modal"
 import type { Transaction } from "@/types"
-import { PDFDownloadLink } from "@react-pdf/renderer"
-import AnalyticsReportPDF from "@/components/pdf/AnalyticsReportPDF"
+// import { PDFDownloadLink } from "@react-pdf/renderer"
+// import AnalyticsReportPDF from "@/components/pdf/AnalyticsReportPDF"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
@@ -121,7 +121,7 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
@@ -170,7 +170,7 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
@@ -235,7 +235,7 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
           </div>
 
           <div className="flex items-center gap-3">
-            <PDFDownloadLink
+            {/* <PDFDownloadLink
               document={
                 <AnalyticsReportPDF
                   stats={stats}
@@ -259,7 +259,7 @@ export default function Analytics({ userId, onTransactionClick }: AnalyticsProps
                   {loading ? "Loading..." : "Export PDF"}
                 </Button>
               )}
-            </PDFDownloadLink>
+            </PDFDownloadLink> */}
 
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-slate-400" />
